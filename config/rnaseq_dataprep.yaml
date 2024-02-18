@@ -1,0 +1,79 @@
+#species names
+species: #level1
+  piper06: Pornatum
+  piper09: Pfimbriulatum
+  piper10: Pmagnificum
+  piper12: Pdilatatum
+  piper20: Pbetle
+  piper23: Parboreum
+  piper25: Pamalago
+  piper26: Psarmentosum
+  piper27: Pkadsura
+  piper32: Pguineense
+  piper54: Pauritum
+  piper55: Pexcelsum
+  piper56: Pnigrum
+
+
+#rna-seq i/o
+rna-seq:  #level1
+  assembly: #level2
+    piper06: data/rna-seq/assemblies/piper06/transcriptome.pep
+    piper09: data/rna-seq/assemblies/piper09/transcriptome.pep
+    piper10: data/rna-seq/assemblies/piper10/transcriptome.pep
+    piper12: data/rna-seq/assemblies/piper12/transcriptome.pep
+    piper20: data/rna-seq/assemblies/piper20/transcriptome.pep
+    piper23: data/rna-seq/assemblies/piper23/transcriptome.pep
+    piper25: data/rna-seq/assemblies/piper25/transcriptome.pep
+    piper26: data/rna-seq/assemblies/piper26/transcriptome.pep
+    piper27: data/rna-seq/assemblies/piper27/transcriptome.pep
+    piper32: data/rna-seq/assemblies/piper32/transcriptome.pep
+    piper54: data/rna-seq/assemblies/piper54/transcriptome.pep
+    piper55: data/rna-seq/assemblies/piper55/transcriptome.pep
+    piper56: data/rna-seq/assemblies/piper56/transcriptome.pep
+
+  proteome_fasta:  #level2
+    piper06: data/rna-seq/assemblies/piper06/proteome.pep
+    piper09: data/rna-seq/assemblies/piper09/proteome.pep
+    piper10: data/rna-seq/assemblies/piper10/proteome.pep
+    piper12: data/rna-seq/assemblies/piper12/proteome.pep
+    piper20: data/rna-seq/assemblies/piper20/proteome.pep
+    piper23: data/rna-seq/assemblies/piper23/proteome.pep
+    piper25: data/rna-seq/assemblies/piper25/proteome.pep
+    piper26: data/rna-seq/assemblies/piper26/proteome.pep
+    piper27: data/rna-seq/assemblies/piper27/proteome.pep
+    piper32: data/rna-seq/assemblies/piper32/proteome.pep
+    piper54: data/rna-seq/assemblies/piper54/proteome.pep
+    piper55: data/rna-seq/assemblies/piper55/proteome.pep
+    piper56: data/rna-seq/assemblies/piper56/proteome.pep
+
+  proteome_csv:  #level2
+    # piper06: data/rna-seq/assemblies/piper06/proteome.csv
+    piper09: data/rna-seq/assemblies/piper09/proteome.csv
+    # piper10: data/rna-seq/assemblies/piper10/proteome.csv
+    piper12: data/rna-seq/assemblies/piper12/proteome.csv
+    # piper20: data/rna-seq/assemblies/piper20/proteome.csv
+    piper23: data/rna-seq/assemblies/piper23/proteome.csv
+    piper25: data/rna-seq/assemblies/piper25/proteome.csv
+    piper26: data/rna-seq/assemblies/piper26/proteome.csv
+    piper27: data/rna-seq/assemblies/piper27/proteome.csv
+    # piper32: data/rna-seq/assemblies/piper32/proteome.csv
+    piper54: data/rna-seq/assemblies/piper54/proteome.csv
+    piper55: data/rna-seq/assemblies/piper55/proteome.csv
+    piper56: data/rna-seq/assemblies/piper56/proteome.csv
+
+
+  prefix: #level2
+    piper06: Porn_
+    piper09: Pfim_
+    piper10: Pmag_
+    piper12: Pdil_
+    piper20: Pbet_
+    piper23: Parb_
+    piper25: Pama_
+    piper26: Psar_
+    piper27: Pkad_
+    piper32: Pgui_
+    piper54: Paur_
+    piper55: Pexc_
+    piper56: Pnig_

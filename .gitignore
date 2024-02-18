@@ -1,0 +1,5 @@
+#ignore entire data folder
+/data/ 
+
+#ignore all .DS_Store
+.DS_Store

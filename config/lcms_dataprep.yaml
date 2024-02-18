@@ -1,0 +1,10 @@
+#lc-ms input/output
+lc-ms:
+  metadata: data/lc-ms/fbmn_metadata.tsv
+  ftable: data/lc-ms/fbmn_quant.csv
+  annotations: data/lc-ms/annotation.csv
+  fingerid: data/lc-ms/sirius/compound_identifications.tsv
+  canopus: data/lc-ms/sirius/canopus_compound_summary.tsv
+  gnps_ntable: data/lc-ms/fbmn/gnps/clusterinfo_summary/18cd963b3be844478b2f51de3a2cccf4.tsv
+  merged_ftable: data/lc-ms/ftable_merged.csv
+  gnps_graphml: data/lc-ms/fbmn/gnps/FEATURE-BASED-MOLECULAR-NETWORKING-dc2ddf92-download_cytoscape_data-main.graphml
