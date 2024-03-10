@@ -1,36 +1,37 @@
 import argparse
 from pathlib import Path
 import pandas as pd
-from src.lcms import *
+from src.lcms_utils import *
 
 
 
 def main():
     parser = argparse.ArgumentParser(description="Merge MZmine feature table with SIRIUS predictions and GNPS results.")
-    parser.add_argument("--config", dest='config_path', help="Path to config.yaml", default='config.yaml')
+    parser.add_argument("--config", dest='config_path', help="Path to config.yaml", default='config/lcms_dataprep.yaml')
     args = parser.parse_args()
 
     #load paths dict from config.yaml
-    config = load_config(args.config_path, level1='lc-ms')
+    config_path = 'config/lcms_dataprep.yaml'
+    config = get_config(config_path, data='lc-ms')
+
 
     ### Sample list ###
-    metadata_path = Path(config.get('metadata', ''))
-    metadata = pd.read_csv(metadata_path, sep='\t')
+    metadata = pd.read_csv(config['metadata'], sep='\t')
     filenames = metadata['filename']
     sample_names = metadata['ATTRIBUTE_Replicate']
 
 
     ### MZmine ###
-    ftable_path = Path(config.get('ftable', ''))
-    ftable = pd.read_csv(ftable_path)
+    ftable = pd.read_csv(config['ftable'])
     ftable.columns = [col.replace(' Peak area', '') if ' Peak area' in col else col for col in ftable.columns] #remove 'Peak area' from sample columns
-    ftable = ftable[['row ID', 'row m/z', 'row retention time', 'correlation group ID', 'best ion'] + filenames.tolist()] #keep relevant columns
+    ftable = ftable[['row ID', 'row m/z', 'row retention time', 'correlation group ID', 'best ion', 'neutral M mass'] + filenames.tolist()] #keep relevant columns
     rename_map = dict(zip(filenames, sample_names)) #rename sample columns
     rename_map.update({'row ID': 'feat_ID',
                     'row m/z': 'mz',
                     'row retention time': 'RT',
                     'correlation group ID': 'corrGroup_ID',
-                    'best ion':'adduct'}) #rename ID columns
+                    'best ion':'adduct',
+                    'neutral M mass': 'neutral mass'}) #rename ID columns
     ftable.rename(columns=rename_map, inplace=True)
 
     #create `corrGroup_size` column
@@ -50,8 +51,7 @@ def main():
 
 
     #import localDB annotations
-    annotations_path = Path(config.get('annotations', ''))
-    annotations = pd.read_csv(annotations_path, usecols=['id', 'compound_name'], na_values='')
+    annotations = pd.read_csv(config['annotations'], usecols=['id', 'compound_name'], na_values='')
     annotations.rename(columns={'id': 'feat_ID',
                                 'compound_name': 'customDB'}, inplace=True)
     ftable = pd.merge(ftable, annotations, on='feat_ID', how='left') #create 'customDB' column
@@ -60,8 +60,7 @@ def main():
 
     ### SIRIUS ###
     #CSI:FingerID
-    fingerid_path = Path(config.get('fingerid', ''))
-    fingerid = pd.read_csv(fingerid_path, sep='\t', usecols= ['smiles', 'name', 'CSI:FingerIDScore', 'ConfidenceScore', 'molecularFormula', 'featureId'])
+    fingerid = pd.read_csv(config['fingerid'], sep='\t', usecols= ['smiles', 'name', 'CSI:FingerIDScore', 'ConfidenceScore', 'molecularFormula', 'featureId'])
     fingerid.rename(columns={'name': 'FingerID_name',
                             'ConfidenceScore':'COSMIC_score',
                             'CSI:FingerIDScore':'FingerID_score',
@@ -70,8 +69,7 @@ def main():
                             'featureId':'feat_ID'}, inplace=True)
 
     #CANOPUS
-    canopus_path = Path(config.get('canopus', ''))
-    canopus = pd.read_csv(canopus_path, sep='\t', usecols= ['NPC#pathway', 'NPC#pathway Probability', 'NPC#superclass', 'NPC#superclass Probability', 'NPC#class', 'NPC#class Probability', 'molecularFormula', 'featureId'])
+    canopus = pd.read_csv(config['canopus'], sep='\t', usecols= ['NPC#pathway', 'NPC#pathway Probability', 'NPC#superclass', 'NPC#superclass Probability', 'NPC#class', 'NPC#class Probability', 'molecularFormula', 'featureId'])
     canopus.rename(columns={'NPC#pathway':'NPCpathway',
                             'NPC#pathway Probability':'NPCpathway_score',
                             'NPC#superclass':'NPCsuperclass',
@@ -82,30 +80,61 @@ def main():
                             'featureId':'feat_ID'}, inplace=True)
 
 
-    ### GNPS node table ###
-    gnps_path = Path(config.get('gnps_ntable', ''))
-    gnps = pd.read_csv(gnps_path, sep='\t')
-    cols = ['GNPSGROUP:' + sample for sample in sample_names] + ['cluster index', 'componentindex','sum(precursor intensity)']
+
+    ### GNPS2 node table ###
+    gnps = pd.read_csv(config['gnps2_ntable'], sep='\t')
+    cols = ['cluster index', 'parent mass', 'RTMean', 'component'] + [col for col in gnps.columns if 'GNPSGROUP' in col]
     gnps = gnps[cols]
     gnps.rename(columns={'cluster index': 'feat_ID',
-                                'componentindex': 'network_ID',
-                                'sum(precursor intensity)': 'sum_intensity'}, inplace=True)
-
+                    'parent mass': 'mz',
+                    'RTMean': 'RT',
+                    'component': 'network_ID'}, inplace=True) #rename columns
 
     #create 'network_size' column
     network_size = gnps.groupby('network_ID')['network_ID'].count()
-    gnps = gnps.merge(network_size, how='left', left_on ='network_ID', right_index=True, suffixes = (None, '_count'))
-    gnps.rename(columns={'network_ID_count': 'network_size'}, inplace=True)
+    gnps = gnps.merge(network_size, how='left', left_on ='network_ID', right_index=True, suffixes = (None, '_count')).rename(columns={'network_ID_count': 'network_size'}) 
+
+
+    #create 'Log2_intensity' column (using ATTRIBUTE_Replicate columns)
+    rep_cols = gnps.filter(regex='ATTRIBUTE_Replicate')
+    gnps['Log2-intensity'] = np.log2(rep_cols.sum(axis=1))
+
+
+    #keep only 'ATTRIBUTE_Sample' columns for pie-charts mapping
+    cols_to_keep = [col for col in gnps.columns if 'ATTRIBUTE' not in col or 'ATTRIBUTE_Tissue' in col]
+    ntable = gnps[cols_to_keep]
+    ntable.columns = ntable.columns.str.replace('ATTRIBUTE_Tissue:GNPSGROUP:', '') #shorten column names
+
+    ### GNPS2 library matches ###
+    mslib = pd.read_csv(config['gnps2_lib'], sep='\t')
+    mslib = mslib[['#Scan#', 'Compound_Name', 'LibMZ', 'MassDiff', 'MQScore', 'Smiles', 'Instrument']]
+    mslib.rename(columns={'#Scan#': 'feat_ID',
+                    'Compound_Name': 'LibMatch_name',
+                    'LibMZ': 'Lib_mz',
+                    'MassDiff': 'Lib_MassDiff',
+                    'MQScore': 'LibMatch_score',
+                    'Instrument': 'LibMatch_instrument',
+                    'Smiles': 'LibMatch_smiles'}, inplace=True) #rename columns
+
 
 
     ### Merge and Export ###
-    merged_ftable_path = Path(config.get('merged_ftable', ''))
+    #MZmine feateure table
     ftable = pd.merge(ftable, canopus, on='feat_ID', how='left')
     ftable = pd.merge(ftable, fingerid, on='feat_ID', how='left')
     ftable = pd.merge(ftable, gnps[['network_ID', 'network_size', 'feat_ID']], on='feat_ID', how='left')
     ftable.insert(6, 'network_ID', ftable.pop('network_ID'))
     ftable.insert(7, 'network_size', ftable.pop('network_size'))
-    ftable.to_csv(merged_ftable_path, index=False)
+    ftable.to_csv(config['ftable_merged'], index=False)
+
+    #GNPS node table
+    ntable = pd.merge(ntable, ftable[['feat_ID', 'adduct', 'neutral mass', 'customDB', 'Detected', 'corrGroup_ID']], on='feat_ID', how='left')
+    ntable = pd.merge(ntable, canopus, on='feat_ID', how='left')
+    ntable = pd.merge(ntable, fingerid, on='feat_ID', how='left')
+    ntable = pd.merge(ntable, mslib, on='feat_ID', how='left')
+    ntable['mz'] = ntable['mz'].round(4) #round m/z to 4 decimals
+    ntable['RT'] = ntable['RT'].round(2) #round RT to 2 decimals
+    ntable.to_csv(config['ntable_clean'], index=False)
 
 
 if __name__ == "__main__":

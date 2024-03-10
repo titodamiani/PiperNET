@@ -9,7 +9,7 @@ def main():
     args = parser.parse_args()
 
     #load sample folder paths from config.yaml
-    assembly_paths = get_config(args.config_path, data='rna-seq', file='assembly')
+    assembly_paths = get_config(args.config_path, data='assembly')
 
     #iterate over path dictionary
     for input in assembly_paths.values():

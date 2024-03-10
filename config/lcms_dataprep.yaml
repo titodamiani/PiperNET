@@ -6,5 +6,9 @@ lc-ms:
   fingerid: data/lc-ms/sirius/compound_identifications.tsv
   canopus: data/lc-ms/sirius/canopus_compound_summary.tsv
   gnps_ntable: data/lc-ms/fbmn/gnps/clusterinfo_summary/18cd963b3be844478b2f51de3a2cccf4.tsv
-  merged_ftable: data/lc-ms/ftable_merged.csv
-  gnps_graphml: data/lc-ms/fbmn/gnps/FEATURE-BASED-MOLECULAR-NETWORKING-dc2ddf92-download_cytoscape_data-main.graphml
+  ftable_merged: data/lc-ms/ftable_merged.csv
+  gnps2_ntable: data/lc-ms/fbmn/gnps2/nf_output/networking/clustersummary_with_network.tsv
+  gnps2_lib: data/lc-ms/fbmn/gnps2/nf_output/library/merged_results_with_gnps.tsv
+  ntable_clean: data/lc-ms/ntable_clean.csv  
+  # gnps2_graphml: data/lc-ms/fbmn/gnps2/nf_output/networking/network_singletons.graphml
+  # gnps_graphml: data/lc-ms/fbmn/gnps/FEATURE-BASED-MOLECULAR-NETWORKING-dc2ddf92-download_cytoscape_data-main.graphml

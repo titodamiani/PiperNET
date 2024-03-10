@@ -16,64 +16,142 @@ species: #level1
 
 
 #rna-seq i/o
-rna-seq:  #level1
-  assembly: #level2
-    piper06: data/rna-seq/assemblies/piper06/transcriptome.pep
-    piper09: data/rna-seq/assemblies/piper09/transcriptome.pep
-    piper10: data/rna-seq/assemblies/piper10/transcriptome.pep
-    piper12: data/rna-seq/assemblies/piper12/transcriptome.pep
-    piper20: data/rna-seq/assemblies/piper20/transcriptome.pep
-    piper23: data/rna-seq/assemblies/piper23/transcriptome.pep
-    piper25: data/rna-seq/assemblies/piper25/transcriptome.pep
-    piper26: data/rna-seq/assemblies/piper26/transcriptome.pep
-    piper27: data/rna-seq/assemblies/piper27/transcriptome.pep
-    piper32: data/rna-seq/assemblies/piper32/transcriptome.pep
-    piper54: data/rna-seq/assemblies/piper54/transcriptome.pep
-    piper55: data/rna-seq/assemblies/piper55/transcriptome.pep
-    piper56: data/rna-seq/assemblies/piper56/transcriptome.pep
+assembly: #level1
+  piper06: data/rna-seq/assemblies/piper06/transcriptome.pep
+  piper09: data/rna-seq/assemblies/piper09/transcriptome.pep
+  piper10: data/rna-seq/assemblies/piper10/transcriptome.pep
+  piper12: data/rna-seq/assemblies/piper12/transcriptome.pep
+  piper20: data/rna-seq/assemblies/piper20/transcriptome.pep
+  piper23: data/rna-seq/assemblies/piper23/transcriptome.pep
+  piper25: data/rna-seq/assemblies/piper25/transcriptome.pep
+  piper26: data/rna-seq/assemblies/piper26/transcriptome.pep
+  piper27: data/rna-seq/assemblies/piper27/transcriptome.pep
+  piper32: data/rna-seq/assemblies/piper32/transcriptome.pep
+  piper54: data/rna-seq/assemblies/piper54/transcriptome.pep
+  piper55: data/rna-seq/assemblies/piper55/transcriptome.pep
+  piper56: data/rna-seq/assemblies/piper56/transcriptome.pep
 
-  proteome_fasta:  #level2
-    piper06: data/rna-seq/assemblies/piper06/proteome.pep
-    piper09: data/rna-seq/assemblies/piper09/proteome.pep
-    piper10: data/rna-seq/assemblies/piper10/proteome.pep
-    piper12: data/rna-seq/assemblies/piper12/proteome.pep
-    piper20: data/rna-seq/assemblies/piper20/proteome.pep
-    piper23: data/rna-seq/assemblies/piper23/proteome.pep
-    piper25: data/rna-seq/assemblies/piper25/proteome.pep
-    piper26: data/rna-seq/assemblies/piper26/proteome.pep
-    piper27: data/rna-seq/assemblies/piper27/proteome.pep
-    piper32: data/rna-seq/assemblies/piper32/proteome.pep
-    piper54: data/rna-seq/assemblies/piper54/proteome.pep
-    piper55: data/rna-seq/assemblies/piper55/proteome.pep
-    piper56: data/rna-seq/assemblies/piper56/proteome.pep
+proteome_fasta:  #level1
+  piper06: data/rna-seq/assemblies/piper06/proteome.pep
+  piper09: data/rna-seq/assemblies/piper09/proteome.pep
+  piper10: data/rna-seq/assemblies/piper10/proteome.pep
+  piper12: data/rna-seq/assemblies/piper12/proteome.pep
+  piper20: data/rna-seq/assemblies/piper20/proteome.pep
+  piper23: data/rna-seq/assemblies/piper23/proteome.pep
+  piper25: data/rna-seq/assemblies/piper25/proteome.pep
+  piper26: data/rna-seq/assemblies/piper26/proteome.pep
+  piper27: data/rna-seq/assemblies/piper27/proteome.pep
+  piper32: data/rna-seq/assemblies/piper32/proteome.pep
+  piper54: data/rna-seq/assemblies/piper54/proteome.pep
+  piper55: data/rna-seq/assemblies/piper55/proteome.pep
+  piper56: data/rna-seq/assemblies/piper56/proteome.pep
 
-  proteome_csv:  #level2
-    # piper06: data/rna-seq/assemblies/piper06/proteome.csv
-    piper09: data/rna-seq/assemblies/piper09/proteome.csv
-    # piper10: data/rna-seq/assemblies/piper10/proteome.csv
-    piper12: data/rna-seq/assemblies/piper12/proteome.csv
-    # piper20: data/rna-seq/assemblies/piper20/proteome.csv
-    piper23: data/rna-seq/assemblies/piper23/proteome.csv
-    piper25: data/rna-seq/assemblies/piper25/proteome.csv
-    piper26: data/rna-seq/assemblies/piper26/proteome.csv
-    piper27: data/rna-seq/assemblies/piper27/proteome.csv
-    # piper32: data/rna-seq/assemblies/piper32/proteome.csv
-    piper54: data/rna-seq/assemblies/piper54/proteome.csv
-    piper55: data/rna-seq/assemblies/piper55/proteome.csv
-    piper56: data/rna-seq/assemblies/piper56/proteome.csv
+proteome_csv:  #level1
+  piper06: data/rna-seq/assemblies/piper06/proteome.csv
+  piper09: data/rna-seq/assemblies/piper09/proteome.csv
+  piper10: data/rna-seq/assemblies/piper10/proteome.csv
+  piper12: data/rna-seq/assemblies/piper12/proteome.csv
+  piper20: data/rna-seq/assemblies/piper20/proteome.csv
+  piper23: data/rna-seq/assemblies/piper23/proteome.csv
+  piper25: data/rna-seq/assemblies/piper25/proteome.csv
+  piper26: data/rna-seq/assemblies/piper26/proteome.csv
+  piper27: data/rna-seq/assemblies/piper27/proteome.csv
+  piper32: data/rna-seq/assemblies/piper32/proteome.csv
+  piper54: data/rna-seq/assemblies/piper54/proteome.csv
+  piper55: data/rna-seq/assemblies/piper55/proteome.csv
+  piper56: data/rna-seq/assemblies/piper56/proteome.csv
 
 
-  prefix: #level2
-    piper06: Porn_
-    piper09: Pfim_
-    piper10: Pmag_
-    piper12: Pdil_
-    piper20: Pbet_
-    piper23: Parb_
-    piper25: Pama_
-    piper26: Psar_
-    piper27: Pkad_
-    piper32: Pgui_
-    piper54: Paur_
-    piper55: Pexc_
-    piper56: Pnig_
+prefix: #level1
+  piper06: Porn_
+  piper09: Pfim_
+  piper10: Pmag_
+  piper12: Pdil_
+  piper20: Pbet_
+  piper23: Parb_
+  piper25: Pama_
+  piper26: Psar_
+  piper27: Pkad_
+  piper32: Pgui_
+  piper54: Paur_
+  piper55: Pexc_
+  piper56: Pnig_
+
+
+#all enzymes
+enzymeDB:
+  AaOKS1: data/rna-seq/enzyme_seq/AaOKS1.fasta
+  AaOKS2: data/rna-seq/enzyme_seq/AaOKS2.fasta
+  AaOKS3: data/rna-seq/enzyme_seq/AaOKS3.fasta
+  AaPCS: data/rna-seq/enzyme_seq/AaPCS.fasta
+  AaPKS: data/rna-seq/enzyme_seq/AaPKS.fasta
+  AhSTS1: data/rna-seq/enzyme_seq/AhSTS1.fasta
+  At4CL1: data/rna-seq/enzyme_seq/At4CL1.fasta
+  At4CL2: data/rna-seq/enzyme_seq/At4CL2.fasta
+  At4CL3: data/rna-seq/enzyme_seq/At4CL3.fasta
+  At4CL4: data/rna-seq/enzyme_seq/At4CL4.fasta
+  At4CLL1: data/rna-seq/enzyme_seq/At4CLL1.fasta
+  At4CLL2: data/rna-seq/enzyme_seq/At4CLL2.fasta
+  At4CLL3: data/rna-seq/enzyme_seq/At4CLL3.fasta
+  At4CLL6: data/rna-seq/enzyme_seq/At4CLL6.fasta
+  At4CLL7: data/rna-seq/enzyme_seq/At4CLL7.fasta
+  At4CLL8: data/rna-seq/enzyme_seq/At4CLL8.fasta
+  AtC4H: data/rna-seq/enzyme_seq/AtC4H.fasta
+  AtCCOAOMT1: data/rna-seq/enzyme_seq/AtCCOAOMT1.fasta
+  AtCHS: data/rna-seq/enzyme_seq/AtCHS.fasta
+  AtPAL2: data/rna-seq/enzyme_seq/AtPAL2.fasta
+  AtPKS1: data/rna-seq/enzyme_seq/AtPKS1.fasta
+  AtPKS2: data/rna-seq/enzyme_seq/AtPKS2.fasta
+  AtPKS3: data/rna-seq/enzyme_seq/AtPKS3.fasta
+  ClCURS1: data/rna-seq/enzyme_seq/ClCURS1.fasta
+  ClCURS2: data/rna-seq/enzyme_seq/ClCURS2.fasta
+  ClCURS3: data/rna-seq/enzyme_seq/ClCURS3.fasta
+  ClDCS: data/rna-seq/enzyme_seq/ClDCS.fasta
+  HlCL1: data/rna-seq/enzyme_seq/HlCL1.fasta
+  MsC4H: data/rna-seq/enzyme_seq/MsC4H.fasta
+  NpCL1: data/rna-seq/enzyme_seq/NpCL1.fasta
+  NpCL2: data/rna-seq/enzyme_seq/NpCL2.fasta
+  Nt4CL1: data/rna-seq/enzyme_seq/Nt4CL1.fasta
+  Nt4CL2: data/rna-seq/enzyme_seq/Nt4CL2.fasta
+  NtCCOAOMT1: data/rna-seq/enzyme_seq/NtCCOAOMT1.fasta
+  OsARAS1: data/rna-seq/enzyme_seq/OsARAS1.fasta
+  OsARAS2: data/rna-seq/enzyme_seq/OsARAS2.fasta
+  OsCUR: data/rna-seq/enzyme_seq/OsCUR.fasta
+  PaCHS: data/rna-seq/enzyme_seq/PaCHS.fasta
+  PaPAL: data/rna-seq/enzyme_seq/PaPAL.fasta
+  PcCL2: data/rna-seq/enzyme_seq/PcCL2.fasta
+  PhCL1: data/rna-seq/enzyme_seq/PhCL1.fasta
+  PmCHS: data/rna-seq/enzyme_seq/PmCHS.fasta
+  PmSPS1: data/rna-seq/enzyme_seq/PmSPS1.fasta
+  PmSPS2: data/rna-seq/enzyme_seq/PmSPS2.fasta
+  PnBAHD1: data/rna-seq/enzyme_seq/PnBAHD1.fasta
+  PnBAHD2: data/rna-seq/enzyme_seq/PnBAHD2.fasta
+  PnCYP719A37: data/rna-seq/enzyme_seq/PnCYP719A37.fasta
+  PnPIPCoAL: data/rna-seq/enzyme_seq/PnPIPCoAL.fasta
+  PtCL: data/rna-seq/enzyme_seq/PtCL.fasta
+  VvSTS1: data/rna-seq/enzyme_seq/VvSTS1.fasta
+  PnFDS1: data/rna-seq/enzyme_seq/PnFDS1.fasta
+  PnFDS2: data/rna-seq/enzyme_seq/PnFDS2.fasta
+  PnLDC: data/rna-seq/enzyme_seq/PnLDC.fasta
+  PnCAO: data/rna-seq/enzyme_seq/PnCAO.fasta
+
+
+blastDB:
+  piper06: data/rna-seq/assemblies/piper06/blastDB/piper06
+  piper09: data/rna-seq/assemblies/piper09/blastDB/piper09
+  piper10: data/rna-seq/assemblies/piper10/blastDB/piper10
+  piper12: data/rna-seq/assemblies/piper12/blastDB/piper12
+  piper20: data/rna-seq/assemblies/piper20/blastDB/piper20
+  piper23: data/rna-seq/assemblies/piper23/blastDB/piper23
+  piper25: data/rna-seq/assemblies/piper25/blastDB/piper25
+  piper26: data/rna-seq/assemblies/piper26/blastDB/piper26
+  piper27: data/rna-seq/assemblies/piper27/blastDB/piper27
+  piper32: data/rna-seq/assemblies/piper32/blastDB/piper32
+  piper54: data/rna-seq/assemblies/piper54/blastDB/piper54
+  piper55: data/rna-seq/assemblies/piper55/blastDB/piper55
+  piper56: data/rna-seq/assemblies/piper56/blastDB/piper56
+
+
+various:
+  sonicparanoid: data/rna-seq/orthologs/runs/piperNET/ortholog_groups/ortholog_groups.tsv
+  dummy: 'dummy/path'

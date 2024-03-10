@@ -14,8 +14,8 @@ def main():
 
 
     #load sample folder paths from config.yaml
-    assembly_paths = get_config(args.config_path, data='rna-seq', file='assembly') #dictionary
-    prefixes = get_config(args.config_path, data='rna-seq', file='prefix')
+    assembly_paths = get_config(args.config_path, data='assembly')
+    prefixes = get_config(args.config_path, data='prefix', filepaths=False)
 
 
     #iterate over path dictionary

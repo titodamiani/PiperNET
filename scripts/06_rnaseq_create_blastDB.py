@@ -9,16 +9,15 @@ def main():
     args = parser.parse_args()
 
     #load sample folder paths from config.yaml
-    assembly_paths = get_config(args.config_path, data='rna-seq', file='assembly') #dictionary
-    species_names = get_config(args.config_path, names='species')
-
+    assembly_paths = get_config(args.config_path, data='proteome_fasta') #dictionary
+    species_names = get_config(args.config_path, data='species', filepaths=False)
 
     #iterate over path dictionary
     for input, species in zip(assembly_paths.values(), species_names.values()):
         
         try:
             #i/o file paths
-            input = input.with_name('proteome.pep')
+            # input = input.with_name('proteome.pep')
             blastDB_dir = input.parent / 'blastDB'
             output = blastDB_dir / input.parent.stem
 

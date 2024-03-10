@@ -14,8 +14,8 @@ def main():
     args = parser.parse_args()
 
     #load sample folder paths from config.yaml
-    assembly_paths = get_config(args.config_path, data='rna-seq', file='assembly') #dictionary
-    prefixes = get_config(args.config_path, data='rna-seq', file='prefix')
+    assembly_paths = get_config(args.config_path, data='assembly')
+    prefixes = get_config(args.config_path, data='prefix', filepaths=False)
     
     #iterate over path dictionary
     for input, prefix in zip(assembly_paths.values(), prefixes.values()):
@@ -133,7 +133,7 @@ def main():
             
 
             #add prefix to id column
-            proteome['id'] = str(prefix) + proteome['id']
+            proteome['id'] = prefix + proteome['id']
             
             #write to csv
             proteome.to_csv(output, index=False)
