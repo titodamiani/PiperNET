@@ -9,28 +9,6 @@ from io import StringIO
 from Bio import SeqIO
 
 
-# ########## Load config.yaml files ##########
-# def get_config(config_path, **kwargs):
-    
-#     #load config.yaml as dict
-#     with open(config_path, "r") as handle:
-#         config = yaml.safe_load(handle)
-    
-#     #keep portion of config.yaml based on provided keys 
-#     try:
-#         for level in kwargs.values():
-#             if isinstance(config[level], str):
-#                 return config[level]
-#             else:
-#                 config = config[level]
-        
-#         #convert str paths to Path objects
-#         config = {k: Path(v) if isinstance(v, str) else v for k, v in config.items()}
-    
-#         return config
-#     except KeyError:
-#         raise KeyError("Key(s) not found in config.yaml")
-
 ########## Load config.yaml files ##########
 def get_config(config_path: str, filepaths: bool=True, **kwargs):
     """
@@ -77,7 +55,7 @@ def get_config(config_path: str, filepaths: bool=True, **kwargs):
 def import_sonicpd(file_path):
     sonicpd = pd.read_csv(file_path, sep='\t', index_col='group_id')
     sonicpd = sonicpd.applymap(lambda x: x.split(',') if isinstance(x, str) else x) #turn entries into lists (instead of strings)
-    sonicpd = sonicpd.applymap(lambda x: [] if x == ['*'] else x) #replace empty entries with None instead of '*' 
+    sonicpd = sonicpd.applymap(lambda x: [] if x == ['*'] else x) #replace empty entries with empty lists instead of '*' 
     sonicpd.columns = [col.split('.')[0] for col in sonicpd.columns] #remove .pep from col names
     return sonicpd
 
