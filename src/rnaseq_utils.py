@@ -1,5 +1,4 @@
 import pandas as pd
-import yaml
 import re
 import os
 import urllib.request
@@ -7,57 +6,8 @@ from pathlib import Path
 import subprocess
 from io import StringIO
 from Bio import SeqIO
+import matplotlib.pyplot as plt
 
-
-########## Load config.yaml files ##########
-def get_config(config_path: str, filepaths: bool=True, **kwargs):
-    """
-    Load a config.yaml file as dictionary.
-
-    Parameters:
-    config_path (str): path to the YAML configuration file.
-    filepaths (bool): if True, convert all string values to Path objects.
-    **kwargs: keyword arguments representing keys in the YAML file.
-
-    Returns:
-    dict: config.yaml file as dictionary.
-
-    Raises:
-    KeyError: if one of the keys in kwargs is not found in the config.yaml.
-    """
-
-    #load config.yaml as dict
-    with open(config_path, "r") as handle:
-        config = yaml.safe_load(handle)
-    
-    #keep portion of config.yaml based on provided keys 
-    try:
-        for argument, value in kwargs.items(): #iterates over config levels provided in kwargs"
-            if value not in config: #if one of the provided levels is not in the config.yaml, raise error.
-                raise KeyError(f'Key {value} not found in the config.yaml') 
-            if isinstance(config[value], str): #if config[value] is a string, return it and end the loop
-                return config[value]
-            else: #if config[value] is not a string (i.e., it's still a dict), update config to be the nested dict and go to next iteration
-                config = config[value]
-        
-        #convert str paths to Path objects
-        if filepaths:
-            config = {k: Path(v) if isinstance(v, str) else v for k, v in config.items()}
-    
-        return config
-    
-    except KeyError as e:
-        raise KeyError(str(e))
-
-
-
-########## Import SonicParanoid output ##########
-def import_sonicpd(file_path):
-    sonicpd = pd.read_csv(file_path, sep='\t', index_col='group_id')
-    sonicpd = sonicpd.applymap(lambda x: x.split(',') if isinstance(x, str) else x) #turn entries into lists (instead of strings)
-    sonicpd = sonicpd.applymap(lambda x: [] if x == ['*'] else x) #replace empty entries with empty lists instead of '*' 
-    sonicpd.columns = [col.split('.')[0] for col in sonicpd.columns] #remove .pep from col names
-    return sonicpd
 
 
 ########## Extract orf type from rnaSPAdes header ##########
@@ -154,48 +104,251 @@ def reorder_tissues(original):
 
 
 ########## BLASTp ##########
-def run_blastp(seq_paths, blastDB_paths, min_cov = 0, min_sim = 0):
+def run_blastp(query_paths, blastDB_paths, out_path = '', min_cov = 0, min_sim = 0, min_bitscore = 50, create_combinedID = False, log = True):
+    '''
+    Run BLASTp search for each query in 'query_paths' against each database in 'blastDB_paths'.
+    Results are filtered based on minimum coverage, similarity, and bit score.
+    Optionally creates a combined ID for each hit concatenating hit ID, coverage, and similarity.
+    If 'out_path' is provided, saves results as CSV file. 
+
+
+    Parameters:
+    query_paths (dict): dictionary where keys are query names and values are paths to the query files.
+    blastDB_paths (dict): dictionary where keys are sample names and values are paths to the BLAST databases.
+    out_path (str, optional): Path where to save the hits DataFrame as a CSV file. Default is ''.
+    min_cov (int, optional): Minimum query coverage to consider a hit. Default is 0.
+    min_sim (int, optional): Minimum similarity to consider a hit. Default is 0.
+    min_bitscore (int, optional): Minimum bit score to consider a hit. Default is 50.
+    create_combinedID (bool, optional): Whether to create a combined ID for each hit. Default is False.
+
+    Returns:
+    hits (DataFrame): A DataFrame containing the hits form all BLAST searches.
+    '''
+
+    hits = pd.DataFrame()
     
-    '''To document'''
-    
-    hits = pd.DataFrame()  # empty DataFrame
-    
-    for query in seq_paths.values():
-        for sample, blastDB in zip(blastDB_paths.keys(), blastDB_paths.values()):
-            print(f'Querying {query} in {sample} transcriptome...')
+    for query, query_path in query_paths.items():
 
-            #construct command
-            command = f'blastp -db {blastDB} -query {query} -evalue 1e-50 -outfmt "10 delim=, qacc sseqid qcovs score evalue pident ppos sseq"'
+            for sample, database_path in blastDB_paths.items():
+                    if log:
+                        print(f'Querying {query} in {sample} transcriptome...')
 
-            #run command
-            output = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    #run blastp
+                    command = f'blastp -db {database_path} -query {query_path} -evalue 1e-50 -outfmt "10 delim=, qacc sseqid qcovs score evalue pident ppos sseq"'
+                    out = subprocess.run(command, shell=True, capture_output=True, text=True)
 
-            #convert to dataframe
-            if output.returncode == 0:
-                output = output.stdout
-                output = pd.read_csv(StringIO(output), header=None, names=['query', 'hit', 'coverage', 'score', 'evalue', 'identity', 'similarity', 'sequence'])
+                    #convert subprocess output to df
+                    if out.returncode == 0:
+                            out = out.stdout
+                            out_df = pd.read_csv(StringIO(out), header=None, names=['query', 'hit', 'query coverage', 'bit score', 'e-value', 'identity', 'similarity', 'hit sequence'])
+                            
+                            #create 'sample' column
+                            out_df['sample'] = sample
 
-                #create full_id column
-                output['blast_id'] = output.apply(lambda row: f"{row['hit']}_cov{row['coverage']}_sim{round(row['similarity'])}", axis=1)
-                
-                #print number of retrieved hits
-                print(f"{output.shape[0]} hits found for {query.stem} in {sample} transcriptome.")
+                            #filter by querey_coverage, similarity, bit score
+                            filt = (out_df['query coverage'] > min_cov) & (out_df['similarity'] > min_sim) & (out_df['bit score'] > min_bitscore)
+                            out_df = out_df.loc[filt]
+                            
+                            #create 'combined ID' column
+                            if create_combinedID:
+                                    #create combinedID column
+                                    out_df['combined ID'] = out_df.apply(lambda row: f"{row['hit']}_cov{row['query coverage']}_sim{round(row['similarity'])}", axis=1)
 
-                #filter by coverage and similarity
-                filt = (output['coverage'] > min_cov) & (output['similarity'] > min_sim)
-                output = output.loc[filt]
+                            #print number of retrieved hits
+                            if log:
+                                print(f"{out_df.shape[0]} hits for {query} in {sample} transcriptome.")
 
-                #append output to blast_results
-                hits = pd.concat([hits, output], ignore_index=True)
+                            #append output to hits df
+                            hits = pd.concat([hits, out_df], ignore_index=True)
 
-            else:
-                print(f"An error occurred while running the BLASTp command!")
+                    else:
+                            print(f"ERROR: An error occurred while running the BLASTp command!")
 
-    # #remove duplicates
-    # hits['query'] = hits['query'].apply(lambda x: [x]) #convert to list
-    # grouped = hits.groupby('hit').agg({'query': 'sum'})
-    # hits = hits.drop(columns='query')
-    # hits = pd.merge(hits, grouped, left_on='hit', right_index=True)
-    # hits['query'] = hits['query'].apply(set) #convert to set
+    #save hits to file
+    if out_path:
+          if os.path.exists(os.path.dirname(out_path)):
+                 hits.to_csv(out_path, index=False)
+          else:
+            raise FileNotFoundError(f"Directory {os.path.dirname(out_path)} not found. Please provide a valid path.")
 
     return hits
+
+
+
+########## Plot counts per species ##########
+def plot_count_per_species(data, title='', xlabel='', ylabel='Count'):
+    """
+    Plots a bar chart of counts per species.
+
+    Parameters:
+    - data: pandas.Series or pandas.DataFrame with the counts data to plot.
+        Expected to be a Series where index are species and values are counts.
+    - title: str, plot title. Default is ''.
+    - xlabel: str, label on x-axis. Default is ''.
+    - ylabel: str, label on y-axis. Default is 'Count'.
+    """
+    plt.figure(figsize=(7,5))
+    data.plot(kind='bar')
+    plt.title(title, fontdict={'fontsize': 18, 'fontweight': 'bold'})
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel, fontdict={'fontsize': 18})
+    plt.xticks(fontsize=18)
+    plt.show()
+
+
+
+########## Assign single expression value in tissues ##########
+def assign_tissue_expr(proteome, tpm_cols='', tissue_order=['leaf', 'stem', 'root', 'youfr', 'medfr', 'oldfr'], metric='mean'):
+    '''
+    Calculate expression (max or average) of replicates per tissue.
+
+    Parameters:
+    proteome (DataFrame): input proteome dataframe. Can be proteomes_all or subsets of it. 
+    tpm_cols (list, optional): list of column names containing expression data. 
+                               If not provided, columns containing 'rep' in their names are used.
+    tissue_order (list, optional): tissue names in the order that they should appear in the output dataframe. 
+                                   Default is ['leaf', 'stem', 'root', 'youfr', 'medfr', 'oldfr'].
+    metric (str): metric used for calculating expression value across tissues. 
+                  Either 'max' or 'mean'. Default is 'mean'.
+
+    Returns:
+    DataFrame: df with same index as input data and expression (max or average) for each tissue, 
+               with tissues ordered according to tissue_order.
+    
+    Raises:
+    ValueError: If an invalid metric is passed. Only 'max' and 'mean' are valid.
+    '''
+    
+    if not tpm_cols:
+        tpm_cols=[col for col in proteome.columns if 'rep' in col]
+
+    expr_data = proteome[tpm_cols] #keep columns with expression data
+    tissue_names = expr_data.columns.str.split('_').str[0] #extract tissues from column names
+
+    if metric == 'max':
+        expr_data_result = expr_data.groupby(by=tissue_names, axis=1).max().round(1) #group-by tissue, calculate max
+
+    elif metric == 'mean':
+        expr_data_result = expr_data.groupby(by=tissue_names, axis=1).mean().round(1) #group-by tissue, calculate mean
+
+    else:
+        raise ValueError("Invalid metric. Expected 'max' or 'mean'.")
+
+    expr_data_result = expr_data_result.reindex(columns=tissue_order) #reorder columns
+    return expr_data_result
+
+
+
+########## Assign single expression value in orthogroups table ##########
+def assign_orth_expr(orthologs, proteomes, tpm_cols='', metric='max'):
+    '''
+    Assign expression values to each entry in an orthogroups table. Expression values are retrieved from the proteomes_all df. Either maximum or average expression of orthologs across tissus can be used ('metric').
+    
+    Parameters:
+    orthologs (list): list of orthologs (i.e., each entry in orthogroups table).
+    proteomes (pd.DataFrame): merged proteomes dataframe.
+    tpm_cols (str): list of columns containing expression data. Default is empty. If empty, all columns containing 'rep' are used.
+    metric (str): metric used for assigning a single expression value across tissues. 
+                  Either 'max' or 'mean'. Default is 'max'.
+    
+    Returns:
+    expr (float): single expression value.
+    
+    Raises:
+    ValueError: If an invalid metric is passed. Only 'max' and 'mean' are valid.
+    '''
+
+    if not tpm_cols:
+        tpm_cols=[col for col in proteomes.columns if 'rep' in col]
+
+    if metric == 'max':
+        expr = proteomes.loc[:, tpm_cols].loc[orthologs].max().max()
+
+    elif metric == 'mean':
+        expr = proteomes.loc[:, tpm_cols].loc[orthologs].mean().mean()
+        expr = round(expr, 1)
+
+    else:
+        raise ValueError("Invalid metric. Expected 'max' or 'mean'.")
+    return expr
+
+
+
+########## Assign single length value in orthogroups table ##########
+def assign_len_orth(orthologs, proteomes, length_col='length', metric='max'):
+
+    '''
+    Assign lenght to each entry in orthogroups table. Sequence lenghts are retrieved from the proteomes_all df. Either maximum or average length of orthologs can be used ('metric').
+    
+    Parameters:
+    orthologs (list): list of orthologs (i.e., each entry in orthogroups table).
+    proteomes (pd.DataFrame): merged proteomes dataframe.
+    length_col (str): name of column containing length data. Default is 'length'.
+    metric (str): metric used for assigning single legth value. 
+                  Either 'max' or 'mean'. Default is 'max'.
+    
+    Returns:
+    length (int): single length value.
+    
+    Raises:
+    ValueError: If an invalid metric is passed. Only 'max' and 'mean' are valid.
+    '''
+
+    if metric == 'max':
+        length = proteomes[length_col].loc[orthologs].max()
+    elif metric == 'mean':
+        length = proteomes[length_col].loc[orthologs].mean()
+    else:
+        raise ValueError("Invalid metric. Expected 'max' or 'mean'.")
+    return length
+
+
+
+########## Plot ORF type and sequence lenght distributions ##########
+def plot_orftype_and_lenght_distribution(data, colormap=None, bin_size=25):
+    """
+    Generate two plots: 1) pie chart of TransDecoder ORF type count; 2) Sequence lenght distribution as stacked bar plot
+
+    Parameters:
+    data (DataFrame): proteomes_all dataframe, or subsets of it.
+    colormap (dict, optional): A dictionary mapping ORF types to colors. If None, a default colormap is used.
+    bin_size (int, optional): The size of the bins for the sequence length distribution. Default is 25.
+
+    Returns:
+    None. The function directly plots the distributions using matplotlib.
+    """
+    
+    #count orf_type
+    orf_type_count = data['orf_type'].value_counts()
+
+    #sequence length distribution
+    bins = pd.cut(data['length'], bins=range(0, data['length'].max(), bin_size)) #bin data['length']
+    count = data.groupby([bins, 'orf_type']).size().unstack() #count occurrence of orf_types in each bin
+    count = count[orf_type_count.index.tolist()] #reorder according to orf_type_count
+    count = count[count.sum(axis=1) > 0] #drop all-zeros rows
+
+    #color mapping
+    if colormap is None:
+        colormap = {'complete': 'green',
+                    '5prime_partial': 'orange',
+                    '3prime_partial': 'lightcoral',
+                    'internal': 'red'}
+    colors=orf_type_count.index.map(lambda x: colormap[x])
+
+    #create figures
+    fig, axs = plt.subplots(1, 2, figsize=(15, 7))
+
+    #pie chart
+    orf_type_count.plot(kind='pie', autopct='%1.1f%%', colors=colors, legend=False, labels=None, textprops={'fontsize': 18}, ax=axs[0])
+    axs[0].set_title('ORF type', fontdict={'fontsize': 18, 'fontweight': 'bold'})
+    axs[0].set_ylabel('')  # remove y-label
+    axs[0].legend(orf_type_count.index, bbox_to_anchor=(1, 1), loc='upper left') #legend
+    
+    #stacked bar plot
+    count.plot(kind='bar', stacked=True, color=colors, ax=axs[1]) # color=colors,
+    axs[1].set_title('Sequence lenght distribution', fontdict={'fontsize': 18, 'fontweight': 'bold'})
+    axs[1].tick_params(axis='x', labelsize=14)  # increase x-tick labels font size
+    axs[1].legend(title=None, loc='upper left')  # remove legend title
+
+    plt.tight_layout()
+    plt.show()

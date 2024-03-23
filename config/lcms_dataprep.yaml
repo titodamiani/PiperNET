@@ -12,3 +12,19 @@ lc-ms:
   ntable_clean: data/lc-ms/ntable_clean.csv  
   # gnps2_graphml: data/lc-ms/fbmn/gnps2/nf_output/networking/network_singletons.graphml
   # gnps_graphml: data/lc-ms/fbmn/gnps/FEATURE-BASED-MOLECULAR-NETWORKING-dc2ddf92-download_cytoscape_data-main.graphml
+
+
+colors: #level1
+  piper06: FFFFC9
+  piper09: 4184C2
+  piper10: '929000'
+  piper12: CFECC3
+  piper20: 0432FF
+  piper23: FF9300
+  piper25: '941100'
+  piper26: E300FF
+  piper27: 73FEFF
+  piper32: FFFC00
+  piper54: FF0000
+  piper55: 00FA00
+  piper56: 008F00

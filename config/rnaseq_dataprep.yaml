@@ -14,6 +14,21 @@ species: #level1
   piper55: Pexcelsum
   piper56: Pnigrum
 
+colors: #level1
+  piper06: FFFFC9
+  piper09: 4184C2
+  piper10: '929000'
+  piper12: CFECC3
+  piper20: 0432FF
+  piper23: FF9300
+  piper25: '941100'
+  piper26: E300FF
+  piper27: 73FEFF
+  piper32: FFFC00
+  piper54: FF0000
+  piper55: 00FA00
+  piper56: 008F00
+
 
 #rna-seq i/o
 assembly: #level1
@@ -150,8 +165,8 @@ blastDB:
   piper54: data/rna-seq/assemblies/piper54/blastDB/piper54
   piper55: data/rna-seq/assemblies/piper55/blastDB/piper55
   piper56: data/rna-seq/assemblies/piper56/blastDB/piper56
+  
 
-
-various:
+#orthogroups
+orthogroups:
   sonicparanoid: data/rna-seq/orthologs/runs/piperNET/ortholog_groups/ortholog_groups.tsv
-  dummy: 'dummy/path'

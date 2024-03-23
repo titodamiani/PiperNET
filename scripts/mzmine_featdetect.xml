@@ -449,7 +449,7 @@
         <parameter name="Min ratio of peak top/edge">1.7</parameter>
         <parameter name="Peak duration range (min/mobility)">
             <min>0.0</min>
-            <max>1.0</max>
+            <max>2.0</max>
         </parameter>
         <parameter name="Minimum scans (data points)">5</parameter>
     </batchstep>
@@ -723,7 +723,7 @@
             <abs>3</abs>
             <rel>0.0</rel>
         </parameter>
-        <parameter name="Minimum features in an isotope pattern" selected="false">2</parameter>
+        <parameter name="Minimum features in an isotope pattern" selected="true">2</parameter>
         <parameter name="Validate 13C isotope pattern" selected="false">
             <parameter name="m/z tolerance">
                 <absolutetolerance>5.0E-4</absolutetolerance>
@@ -732,7 +732,7 @@
             <parameter name="Max charge">1</parameter>
             <parameter name="Estimate minimum carbon">true</parameter>
             <parameter name="Remove if 13C">true</parameter>
-            <parameter name="Exclude isotopes">H,C,N,O,S</parameter>
+            <parameter name="Exclude isotopes">H,C,N,O,S,H,C,N,O,S</parameter>
         </parameter>
         <parameter name="Remove redundant isotope rows">false</parameter>
         <parameter name="m/z" selected="false"/>
@@ -947,7 +947,6 @@
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
             <current_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/fbmn.mgf</current_file>
-            <last_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/fbmn.mgf</last_file>
         </parameter>
         <parameter name="Merge MS/MS (experimental)" selected="true">
             <parameter name="Select spectra to merge">across samples</parameter>
@@ -981,7 +980,6 @@
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
             <current_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/sirius.mgf</current_file>
-            <last_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/sirius.mgf</last_file>
         </parameter>
         <parameter name="Merge MS/MS" selected="false">
             <parameter name="Select spectra to merge">across samples</parameter>
@@ -1008,7 +1006,6 @@
         <parameter name="Feature lists" type="BATCH_LAST_FEATURELISTS"/>
         <parameter name="Filename">
             <current_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/annotation.csv</current_file>
-            <last_file>/Users/tdamiani/Projects/PiperNET/data/lc-ms/annotation.csv</last_file>
         </parameter>
         <parameter name="Top N per method">1</parameter>
     </batchstep>
